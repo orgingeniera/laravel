@@ -32,10 +32,12 @@ class AuthController extends Controller
     {
         return response()->json(Auth::user());
     }*/
-    public function alluser(Request $request)
+    public function alluser()
     {
-        return response()->json($request->user());
+        $users = User::all(); // Obtiene todos los usuarios de la base de datos
+        return response()->json($users); // Devuelve los usuarios como respuesta JSON
     }
+    
     public function logout(Request $request)
     {
         return response()->json(['message' => 'Cerro sesion']);
