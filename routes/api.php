@@ -25,6 +25,7 @@ Route::middleware(\Tymon\JWTAuth\Http\Middleware\Authenticate::class)->group(fun
   
     Route::middleware('auth:api')->get('/alluser', [AuthController::class, 'alluser']);
     Route::middleware('auth:api')->post('/insertusers', [UserController::class, 'store']);
+    Route::middleware('auth:api')->get('/getallusers', [AuthController::class, 'getallusers']);
     // Otras rutas protegidas
 });
 Route::get('/check', function () {
