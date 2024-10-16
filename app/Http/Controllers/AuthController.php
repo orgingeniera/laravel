@@ -37,7 +37,7 @@ class AuthController extends Controller
 
             $search = $request->input('search');
             $query = User::query();
-
+            $query->where('estado', '1'); // Agregar esta línea
             if ($search) {
                 $query->where('name', 'like', "%$search%")
                     ->orWhere('email', 'like', "%$search%");
@@ -47,15 +47,7 @@ class AuthController extends Controller
 
             return response()->json($users);
         }
-        // Método para obtener todos los usuarios sin paginación
-        public function getallusers()
-        {
-       // Obtener todos los usuarios de la base de datos
-       $users = User::all();
-
-       // Devolver los usuarios como respuesta JSON
-       return response()->json($users);
-   }
+        
     
     public function logout(Request $request)
     {
