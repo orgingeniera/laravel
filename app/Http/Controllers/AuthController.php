@@ -32,10 +32,13 @@ class AuthController extends Controller
     {
         return response()->json(Auth::user());
     }*/
-    public function alluser()
+    public function alluser(Request $request)
     {
-        $users = User::all(); // Obtiene todos los usuarios de la base de datos
-        return response()->json($users); // Devuelve los usuarios como respuesta JSON
+
+        $perPage = $request->input('per_page', 10); // 10 es el valor por defecto
+        $users = User::paginate($perPage); // Pagina los usuarios con la cantidad especificada
+        return response()->json($users);
+
     }
     
     public function logout(Request $request)
