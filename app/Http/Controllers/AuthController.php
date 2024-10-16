@@ -35,14 +35,21 @@ class AuthController extends Controller
     public function alluser(Request $request)
     {
 
-        $perPage = $request->input('per_page', 10); // 10 es el valor por defecto
-        $users = User::paginate($perPage); // Pagina los usuarios con la cantidad especificada
-        return response()->json($users);
+            $search = $request->input('search');
+            $query = User::query();
 
-    }
-   // Método para obtener todos los usuarios sin paginación
-   public function getallusers()
-   {
+            if ($search) {
+                $query->where('name', 'like', "%$search%")
+                    ->orWhere('email', 'like', "%$search%");
+            }
+
+            $users = $query->paginate($request->input('per_page', 10));
+
+            return response()->json($users);
+        }
+        // Método para obtener todos los usuarios sin paginación
+        public function getallusers()
+        {
        // Obtener todos los usuarios de la base de datos
        $users = User::all();
 
