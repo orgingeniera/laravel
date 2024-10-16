@@ -34,10 +34,13 @@ class AuthController extends Controller
     }*/
     public function alluser(Request $request)
     {
+
         $perPage = $request->input('per_page', 10); // 10 es el valor por defecto
         $users = User::paginate($perPage); // Pagina los usuarios con la cantidad especificada
         return response()->json($users);
+
     }
+    
     public function logout(Request $request)
     {
         return response()->json(['message' => 'Cerro sesion']);
