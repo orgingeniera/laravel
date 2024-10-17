@@ -21,6 +21,7 @@ class UserController extends Controller
             'telefono' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
+            'identificacion' => 'required|string|max:50',
         ]);
 
         // Si la validación falla, retorna los errores
@@ -30,6 +31,8 @@ class UserController extends Controller
 
         // Inserción del usuario en la base de datos
         $user = User::create([
+            
+            'identificacion' => $request->identificacion,
             'name' => $request->name,
             'apellido' => $request->apellido,
             'telefono' => $request->telefono,
@@ -76,7 +79,9 @@ class UserController extends Controller
         'password' => 'nullable|string|min:8',
         'apellido' => 'required|string|max:255',
         'telefono' => 'required|string|max:15',
-        'estado' => 'required|string|max:50',
+        'identificacion' => 'required|string|max:50',
+
+        
     ]);
 
     // Retornar errores de validación si los hay
@@ -102,12 +107,25 @@ class UserController extends Controller
     $user->apellido = $request->input('apellido');
     $user->telefono = $request->input('telefono');
     $user->direccion = $request->input('direccion');
-    $user->estado = $request->input('estado');
+    //$user->estado = $request->input('estado');
+    $user->identificacion = $request->input('identificacion');
 
     // Guardar los cambios en la base de datos
     $user->save();
 
     // Retornar el usuario actualizado
     return response()->json($user, 200);
+}
+public function deleteuser($id)
+{
+    $user = User::find($id);
+
+    if ($user) {
+        $user->estado = 2; // Cambiar estado a 2 (Inactivo o Eliminado)
+        $user->save(); // Guardar el cambio
+        return response()->json(['message' => 'Usuario eliminado con éxito'], 200);
+    }
+
+    return response()->json(['message' => 'Usuario no encontrado'], 404);
 }
 }

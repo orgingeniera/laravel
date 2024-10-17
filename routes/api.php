@@ -28,6 +28,8 @@ Route::middleware(\Tymon\JWTAuth\Http\Middleware\Authenticate::class)->group(fun
     Route::middleware('auth:api')->get('/getallusers', [UserController::class, 'getallusers']);
     Route::middleware('auth:api')->get('/getuserbyId/{id}', [UserController::class, 'getuserbyId']);
     Route::middleware('auth:api')->put('/updateuser/{id}', [UserController::class, 'updateuser']);
+    Route::middleware('auth:api')->put('/deleteusers/{id}/delete', [UserController::class, 'deleteuser']);
+
     // Otras rutas protegidas
 });
 Route::get('/check', function () {
