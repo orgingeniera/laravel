@@ -13,6 +13,10 @@ class Avisosytablero extends Model
         'nit',
         'telefono',
         'direccion',
+        'concepto',
+        'ica',
+        'navisosytableros',
+        'autobimestral'
     ];
 
     // Especifica el nombre de la tabla

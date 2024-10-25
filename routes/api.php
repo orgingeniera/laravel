@@ -31,11 +31,17 @@ Route::middleware(\Tymon\JWTAuth\Http\Middleware\Authenticate::class)->group(fun
     Route::middleware('auth:api')->get('/getuserbyId/{id}', [UserController::class, 'getuserbyId']);
     Route::middleware('auth:api')->put('/updateuser/{id}', [UserController::class, 'updateuser']);
     Route::middleware('auth:api')->put('/deleteusers/{id}/delete', [UserController::class, 'deleteuser']);
-   
+   //---------------------------
    
     //para cargar la informacion del excel
     Route::middleware('auth:api')->post('/upload-excel', [AvisosYTableroController::class, 'uploadExcel']);
     // Otras rutas protegidas
+
+    //api avisos y tableros
+    Route::middleware('auth:api')->get('/getallavisosytableros', [AvisosYTableroController::class, 'getallavisosytableros']);
+    Route::middleware('auth:api')->get('/allavisosytablero', [AvisosYTableroController::class, 'allavisosytablero']);
+
+    //-------
 });
 Route::get('/check', function () {
     return response()->json(['message' => 'OK']);
