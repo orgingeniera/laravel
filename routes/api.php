@@ -40,6 +40,9 @@ Route::middleware(\Tymon\JWTAuth\Http\Middleware\Authenticate::class)->group(fun
     //api avisos y tableros
     Route::middleware('auth:api')->get('/getallavisosytableros', [AvisosYTableroController::class, 'getallavisosytableros']);
     Route::middleware('auth:api')->get('/allavisosytablero', [AvisosYTableroController::class, 'allavisosytablero']);
+    Route::middleware('auth:api')->get('/getdeclaracionanualbyid/{id}', [AvisosYTableroController::class, 'getdeclaracionanualbyId']);
+    Route::middleware('auth:api')->post('/insertdeclaracionanual', [AvisosYTableroController::class, 'store']);
+    Route::middleware('auth:api')->put('/updatdeclaracionanual/{id}', [AvisosYTableroController::class, 'updatdeclaracionanual']);
 
     //-------
 });

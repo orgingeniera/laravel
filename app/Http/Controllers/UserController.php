@@ -70,7 +70,7 @@ class UserController extends Controller
         // Devolver el usuario como respuesta JSON
         return response()->json($user);
     }
-    public function updateuser(Request $request, $id)
+public function updateuser(Request $request, $id)
 {
     // Validar la solicitud
     $validator = Validator::make($request->all(), [
