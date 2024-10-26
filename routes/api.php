@@ -43,7 +43,12 @@ Route::middleware(\Tymon\JWTAuth\Http\Middleware\Authenticate::class)->group(fun
     Route::middleware('auth:api')->get('/getdeclaracionanualbyid/{id}', [AvisosYTableroController::class, 'getdeclaracionanualbyId']);
     Route::middleware('auth:api')->post('/insertdeclaracionanual', [AvisosYTableroController::class, 'store']);
     Route::middleware('auth:api')->put('/updatdeclaracionanual/{id}', [AvisosYTableroController::class, 'updatdeclaracionanual']);
+    Route::middleware('auth:api')->delete('/deletedeclaracionanual/{id}/delete', [AvisosYTableroController::class, 'deletedeclaracionanual']);
+    Route::middleware('auth:api')->get('/getallclaracionanual', [AvisosYTableroController::class, 'getallclaracionanual']);
 
+
+    
+    
     //-------
 });
 Route::get('/check', function () {
