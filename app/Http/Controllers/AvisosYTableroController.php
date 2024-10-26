@@ -186,5 +186,24 @@ class AvisosYTableroController extends Controller
     // Retornar el usuario actualizado
     return response()->json($declaracionAnul, 200);
 }
+    public function deletedeclaracionanual($id)
+    {
+        $declaracionAnual = DeclaracionAnul::find($id);
+
+        if ($declaracionAnual) {
+            $declaracionAnual->delete();
+            return response()->json(['message' => 'Declaración anual eliminado con éxito'], 200);
+        }
+
+        return response()->json(['message' => 'Declaración anual no encontrada'], 404);
+    }
+    public function getallclaracionanual()
+    {
+        // Obtener todos los usuarios de la base de datos
+        $declaracionAnul = DeclaracionAnul::all();
+
+        // Devolver los usuarios como respuesta JSON
+        return response()->json($declaracionAnul);
+      }
 }
 
