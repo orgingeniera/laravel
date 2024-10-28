@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AvisosYTableroController;
+use App\Http\Controllers\DeclaracionesanulImageController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -45,10 +47,11 @@ Route::middleware(\Tymon\JWTAuth\Http\Middleware\Authenticate::class)->group(fun
     Route::middleware('auth:api')->put('/updatdeclaracionanual/{id}', [AvisosYTableroController::class, 'updatdeclaracionanual']);
     Route::middleware('auth:api')->delete('/deletedeclaracionanual/{id}/delete', [AvisosYTableroController::class, 'deletedeclaracionanual']);
     Route::middleware('auth:api')->get('/getallclaracionanual', [AvisosYTableroController::class, 'getallclaracionanual']);
-
-
+     //-------
     
-    
+
+     //api insertar imagenes
+     Route::middleware('auth:api')->post('/declaracionesanul-images', [DeclaracionesanulImageController::class, 'store']);
     //-------
 });
 Route::get('/check', function () {
