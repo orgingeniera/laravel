@@ -42,7 +42,10 @@ class DeclaracionAnul extends Model
         'sobretasa_seguridad',
         'total_impuesto_cargo',
     ];
-
+    public function images()
+    {
+        return $this->hasMany(DeclaracionesanulImage::class);
+    }
     // Las columnas created_at y updated_at se gestionan automáticamente
     public $timestamps = true;
    
