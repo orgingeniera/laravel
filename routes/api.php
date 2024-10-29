@@ -51,6 +51,7 @@ Route::middleware(\Tymon\JWTAuth\Http\Middleware\Authenticate::class)->group(fun
     
 
      //api insertar imagenes
+     Route::middleware('auth:api')->get('/declaracionesanul-images/{declaracionesanul_id}', [DeclaracionesanulImageController::class, 'getImages']);
      Route::middleware('auth:api')->post('/declaracionesanul-images', [DeclaracionesanulImageController::class, 'store']);
     //-------
 });
