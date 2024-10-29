@@ -30,4 +30,18 @@ class DeclaracionesanulImageController extends Controller
             'data' => $declaracionanulImage,
         ], 201);
     }
+    public function getImages($declaracionesanul_id)
+    {
+        // Validar que el ID proporcionado exista en la tabla
+        $declaracionanulImages = DeclaracionesanulImage::where('declaracionesanul_id', $declaracionesanul_id)->get();
+
+        // Verificar si se encontraron imágenes
+        if ($declaracionanulImages->isEmpty()) {
+            return response()->json(['message' => 'No se encontraron imágenes para esta declaración.'], 404);
+        }
+
+        // Retornar las imágenes
+        return response()->json($declaracionanulImages, 200);
+    }
+
 }
