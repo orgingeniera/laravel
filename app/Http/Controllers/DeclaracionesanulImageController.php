@@ -31,17 +31,24 @@ class DeclaracionesanulImageController extends Controller
         ], 201);
     }
     public function getImages($declaracionesanul_id)
-    {
-        // Validar que el ID proporcionado exista en la tabla
-        $declaracionanulImages = DeclaracionesanulImage::where('declaracionesanul_id', $declaracionesanul_id)->get();
+        {
+            // Validar que el ID proporcionado exista en la tabla
+            $declaracionanulImages = DeclaracionesanulImage::where('declaracionesanul_id', $declaracionesanul_id)->get();
 
-        // Verificar si se encontraron imágenes
-        if ($declaracionanulImages->isEmpty()) {
-            return response()->json(['message' => 'No se encontraron imágenes para esta declaración.'], 404);
+            // Verificar si se encontraron imágenes
+            if ($declaracionanulImages->isEmpty()) {
+                return response()->json(['message' => 'No se encontraron imágenes para esta declaración.'], 404);
+            }
+
+            // Construye la URL completa para cada imagen
+            $declaracionanulImages->transform(function ($image) {
+                $image->image_url = asset('storage/' . $image->image_path); // URL completa
+                return $image;
+            });
+
+            // Retornar las imágenes
+            return response()->json($declaracionanulImages, 200);
         }
 
-        // Retornar las imágenes
-        return response()->json($declaracionanulImages, 200);
-    }
 
 }
