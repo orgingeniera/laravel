@@ -9,7 +9,7 @@ class DeclaracionesanulImage extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['declaracionesanul_id', 'image_path'];
+    protected $fillable = ['declaracionesanul_id', 'image_path', 'image_url'];
 
     public function declaracionesanul()
     {
