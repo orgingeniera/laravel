@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class DeclaracionesanulImage extends Model
+class DeclaracionesBimestralImage extends Model
 {
     use HasFactory;
 
@@ -18,5 +18,9 @@ class DeclaracionesanulImage extends Model
     public function declaracionesmensuales()
     {
         return $this->belongsTo(DeclaracionMensual::class);
+    }
+    public function declaracionesbimestrales()
+    {
+        return $this->belongsTo(DeclaracionBimestral::class);
     }
 }
