@@ -8,6 +8,8 @@ use App\Http\Controllers\AvisosYTableroController;
 use App\Http\Controllers\DeclaracionmensualController;
 use App\Http\Controllers\DeclaracionesanulImageController;
 use App\Http\Controllers\DeclaracionBimestralController;
+use App\Http\Controllers\ContribuyenteController;
+use App\Http\Controllers\VallasController;
 
 /*
 |--------------------------------------------------------------------------
@@ -52,7 +54,9 @@ Route::middleware(\Tymon\JWTAuth\Http\Middleware\Authenticate::class)->group(fun
     Route::middleware('auth:api')->put('/updatdeclaracionanual/{id}', [AvisosYTableroController::class, 'updatdeclaracionanual']);
     Route::middleware('auth:api')->delete('/deletedeclaracionanual/{id}/delete', [AvisosYTableroController::class, 'deletedeclaracionanual']);
     Route::middleware('auth:api')->get('/getallclaracionanual', [AvisosYTableroController::class, 'getallclaracionanual']);
-     //-------
+    Route::middleware('auth:api')->get('/obtenerDeclaracionesPorNit/{nit}', [AvisosYTableroController::class, 'obtenerDeclaracionesPorNit']);
+
+    //-------
 
      //api declaracion mensual
      Route::middleware('auth:api')->get('/alldeclaracionmensual', [DeclaracionmensualController::class, 'alldeclaracionmensual']);
@@ -74,7 +78,29 @@ Route::middleware(\Tymon\JWTAuth\Http\Middleware\Authenticate::class)->group(fun
      Route::middleware('auth:api')->get('/getallclaracionbimestral', [DeclaracionBimestralController::class, 'getallclaracionBimestral']);
      Route::middleware('auth:api')->get('/getAlldeclaracionbimestralbynit/{id}', [DeclaracionBimestralController::class, 'getAllDeclaracionBimestralByNit']);
 
-     
+     //----- api contribuyente
+     Route::middleware('auth:api')->group(function () {
+        Route::get('/getallcontribuyentes', [ContribuyenteController::class, 'getallcontribuyentes']);
+        Route::get('/contribuyentes', [ContribuyenteController::class, 'allcontribuyente']); // Obtener todos los contribuyentes
+        Route::post('/contribuyentes', [ContribuyenteController::class, 'store']); // Crear un nuevo contribuyente
+        Route::get('/contribuyentes/{id}', [ContribuyenteController::class, 'getcontribuyentebyId']); // Obtener un contribuyente específico
+        Route::put('/contribuyentes/{id}', [ContribuyenteController::class, 'updatecontribuyente']); // Actualizar un contribuyente
+        Route::delete('/contribuyentes/{id}', [ContribuyenteController::class, 'deletecontribuyente']); // Eliminar un contribuyente
+    });
+  //--------------API VALLAS
+    Route::middleware('auth:api')->group(function () {
+        Route::get('/getallavisosytableros', [VallasController::class, 'getallavisosytableros']);
+        Route::get('/vallas', [VallasController::class, 'allavisosytablero']);
+        Route::get('/vallas/{id}', [VallasController::class, 'getdeclaracionanualbyId']);
+        Route::post('/vallas', [VallasController::class, 'store']);
+        Route::put('/vallas/{id}', [VallasController::class, 'updatdeclaracionanual']);
+        Route::delete('/vallas/{id}/delete', [VallasController::class, 'deletedeclaracionanual']);
+        Route::get('/vallasgetall', [VallasController::class, 'getallclaracionanual']);
+        Route::get('/vallas/{nit}', [VallasController::class, 'obtenerDeclaracionesPorNit']);
+    
+    });
+
+     //--------------
      
      //api insertar imagenes
      Route::middleware('auth:api')->get('/declaracionesanul-images/{declaracionesanul_id}', [DeclaracionesanulImageController::class, 'getImages']);

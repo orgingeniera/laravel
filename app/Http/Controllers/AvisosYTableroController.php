@@ -8,7 +8,7 @@ use Maatwebsite\Excel\Facades\Excel;
 //use App\Models\Avisosytablero;
 use App\Models\DeclaracionAnul;
 use Illuminate\Support\Facades\Validator;
-
+use Illuminate\Support\Facades\DB;
 
 class AvisosYTableroController extends Controller
 {
@@ -204,6 +204,49 @@ class AvisosYTableroController extends Controller
 
         // Devolver los usuarios como respuesta JSON
         return response()->json($declaracionAnul);
+      }
+      public function obtenerDeclaracionesPorNit($nit)
+      {
+
+         // Obtenemos el `nit_contribuyente` y `razon_social` desde `declaracionesanul` o cualquiera de las tablas
+         $infoGeneral = DB::table('declaracionesanul')
+         ->select('nit_contribuyente', 'razon_social')
+         ->where('nit_contribuyente', $nit)
+         ->first();
+        // Si no se encuentra en declaracionesanul, intentar con declaracionesmensuales
+        if (!$infoGeneral) {
+            $infoGeneral = DB::table('declaracionesmensuales')
+                ->select('nit_contribuyente', 'razon_social')
+                ->where('nit_contribuyente', $nit)
+                ->first();
+        }
+
+        // Si no se encuentra en declaracionesmensuales, intentar con declaracionbimestral
+        if (!$infoGeneral) {
+            $infoGeneral = DB::table('declaracionbimestral')
+                ->select('nit_contribuyente', 'razon_social')
+                ->where('nit_contribuyente', $nit)
+                ->first();
+        }
+          $data = [
+              'info_general' => $infoGeneral,
+              'declaraciones_anuales' => DB::table('declaracionesanul')
+                  ->select('total_industria_comercio', 'impuesto_avisos_tableros')
+                  ->where('nit_contribuyente', $nit)
+                  ->get(),
+  
+              'declaraciones_mensuales' => DB::table('declaracionesmensuales')
+                  ->select('autoretencion_impuesto_industria_comercio', 'mas_autoretenciones_impuestos_avisos_tableros')
+                  ->where('nit_contribuyente', $nit)
+                  ->get(),
+  
+              'declaraciones_bimestrales' => DB::table('declaracionbimestral')
+                  ->select('autoretencion_impuesto_industria_comercio', 'mas_autoretenciones_impuestos_avisos_tableros')
+                  ->where('nit_contribuyente', $nit)
+                  ->get(),
+          ];
+  
+          return response()->json($data);
       }
 }
 
