@@ -10,6 +10,8 @@ use App\Http\Controllers\DeclaracionesanulImageController;
 use App\Http\Controllers\DeclaracionBimestralController;
 use App\Http\Controllers\ContribuyenteController;
 use App\Http\Controllers\VallasController;
+use App\Http\Controllers\VallasImageController;
+use App\Http\Controllers\UvtController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,13 +33,23 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::middleware(\Tymon\JWTAuth\Http\Middleware\Authenticate::class)->group(function () {
   
     //api para usuarios
-    Route::middleware('auth:api')->get('/alluser', [AuthController::class, 'alluser']);
+    Route::middleware('auth:api')->group(function () {
+        Route::get('/alluser', [AuthController::class, 'alluser']);
+        Route::post('/insertusers', [UserController::class, 'store']);
+        Route::get('/getallusers', [UserController::class, 'getallusers']);
+        Route::get('/getuserbyId/{id}', [UserController::class, 'getuserbyId']);
+        Route::put('/updateuser/{id}', [UserController::class, 'updateuser']);
+        Route::put('/deleteusers/{id}/delete', [UserController::class, 'deleteuser']);
+        Route::get('/usercount', [UserController::class, 'countUsers']);
+    });
+    /*Route::middleware('auth:api')->get('/alluser', [AuthController::class, 'alluser']);
     Route::middleware('auth:api')->post('/insertusers', [UserController::class, 'store']);
     Route::middleware('auth:api')->get('/getallusers', [UserController::class, 'getallusers']);
     Route::middleware('auth:api')->get('/getuserbyId/{id}', [UserController::class, 'getuserbyId']);
     Route::middleware('auth:api')->put('/updateuser/{id}', [UserController::class, 'updateuser']);
     Route::middleware('auth:api')->put('/deleteusers/{id}/delete', [UserController::class, 'deleteuser']);
-   //---------------------------
+    */
+    //---------------------------
    
     //para cargar la informacion del excel
     Route::middleware('auth:api')->post('/upload-excel', [AvisosYTableroController::class, 'uploadExcel']);
@@ -47,15 +59,19 @@ Route::middleware(\Tymon\JWTAuth\Http\Middleware\Authenticate::class)->group(fun
     // Otras rutas protegidas
 
     //api avisos y tableros
-    Route::middleware('auth:api')->get('/getallavisosytableros', [AvisosYTableroController::class, 'getallavisosytableros']);
-    Route::middleware('auth:api')->get('/allavisosytablero', [AvisosYTableroController::class, 'allavisosytablero']);
-    Route::middleware('auth:api')->get('/getdeclaracionanualbyid/{id}', [AvisosYTableroController::class, 'getdeclaracionanualbyId']);
-    Route::middleware('auth:api')->post('/insertdeclaracionanual', [AvisosYTableroController::class, 'store']);
-    Route::middleware('auth:api')->put('/updatdeclaracionanual/{id}', [AvisosYTableroController::class, 'updatdeclaracionanual']);
-    Route::middleware('auth:api')->delete('/deletedeclaracionanual/{id}/delete', [AvisosYTableroController::class, 'deletedeclaracionanual']);
-    Route::middleware('auth:api')->get('/getallclaracionanual', [AvisosYTableroController::class, 'getallclaracionanual']);
-    Route::middleware('auth:api')->get('/obtenerDeclaracionesPorNit/{nit}', [AvisosYTableroController::class, 'obtenerDeclaracionesPorNit']);
-
+    Route::middleware('auth:api')->group(function () {
+        Route::get('/countdeclaracionanul', [AvisosYTableroController::class, 'countDeclaracionAnul']);
+        Route::get('/getallavisosytableros', [AvisosYTableroController::class, 'getallavisosytableros']);
+        Route::get('/allavisosytablero', [AvisosYTableroController::class, 'allavisosytablero']);
+        Route::get('/getdeclaracionanualbyid/{id}', [AvisosYTableroController::class, 'getdeclaracionanualbyId']);
+        Route::post('/insertdeclaracionanual', [AvisosYTableroController::class, 'store']);
+        Route::put('/updatdeclaracionanual/{id}', [AvisosYTableroController::class, 'updatdeclaracionanual']);
+        Route::delete('/deletedeclaracionanual/{id}/delete', [AvisosYTableroController::class, 'deletedeclaracionanual']);
+        Route::get('/getallclaracionanual', [AvisosYTableroController::class, 'getallclaracionanual']);
+        Route::get('/obtenerDeclaracionesPorNit/{nit}', [AvisosYTableroController::class, 'obtenerDeclaracionesPorNit']);
+    
+    });
+   
     //-------
 
      //api declaracion mensual
@@ -80,6 +96,7 @@ Route::middleware(\Tymon\JWTAuth\Http\Middleware\Authenticate::class)->group(fun
 
      //----- api contribuyente
      Route::middleware('auth:api')->group(function () {
+        Route::get('/contribuyentecount', [ContribuyenteController::class, 'countContribuyente']);
         Route::get('/getallcontribuyentes', [ContribuyenteController::class, 'getallcontribuyentes']);
         Route::get('/contribuyentes', [ContribuyenteController::class, 'allcontribuyente']); // Obtener todos los contribuyentes
         Route::post('/contribuyentes', [ContribuyenteController::class, 'store']); // Crear un nuevo contribuyente
@@ -89,7 +106,9 @@ Route::middleware(\Tymon\JWTAuth\Http\Middleware\Authenticate::class)->group(fun
     });
   //--------------API VALLAS
     Route::middleware('auth:api')->group(function () {
-        Route::get('/getallavisosytableros', [VallasController::class, 'getallavisosytableros']);
+        Route::get('/vallas/cercanos-anio', [VallasController::class, 'registrosCercanosACumplirAnio']);
+        Route::get('/countVallas', [VallasController::class, 'countVallas']);
+        Route::get('/getallvallas', [VallasController::class, 'getallavisosytableros']);
         Route::get('/vallas', [VallasController::class, 'allavisosytablero']);
         Route::get('/vallas/{id}', [VallasController::class, 'getdeclaracionanualbyId']);
         Route::post('/vallas', [VallasController::class, 'store']);
@@ -97,7 +116,16 @@ Route::middleware(\Tymon\JWTAuth\Http\Middleware\Authenticate::class)->group(fun
         Route::delete('/vallas/{id}/delete', [VallasController::class, 'deletedeclaracionanual']);
         Route::get('/vallasgetall', [VallasController::class, 'getallclaracionanual']);
         Route::get('/vallas/{nit}', [VallasController::class, 'obtenerDeclaracionesPorNit']);
-    
+         //api insertar imagenes
+        Route::middleware('auth:api')->get('/vallas-images/{vallas_id}', [VallasImageController::class, 'getImages']);
+        Route::middleware('auth:api')->post('/vallas-images', [VallasImageController::class, 'store']);
+    //-------
+    });
+
+    //--------------API UVT
+    Route::middleware('auth:api')->group(function () {
+        Route::get('/uvt', [UvtController::class, 'index']);
+        Route::put('/uvt/{id}', [UvtController::class, 'update']);   //-------
     });
 
      //--------------
