@@ -9,9 +9,50 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Models\Valla;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
-
+use Carbon\Carbon;
 class VallasController extends Controller
 {
+    public function countVallas()
+    {
+        // Contar el número de usuarios en la tabla 'users'
+        $userCount = Valla::count();
+
+        // Devolver el conteo como respuesta JSON
+        return response()->json(['count' => $userCount], 200);
+    }
+  
+    public function registrosCercanosACumplirAnio()
+{
+    // Obtener la fecha actual
+    $fechaActual = Carbon::now();
+
+    // Calcular la fecha hace 10 meses y hasta 2 meses en el futuro
+    $fechaLimiteInicio = $fechaActual->copy()->subYear()->subMonths(2); // Hace casi un año (10 meses hacia atrás)
+    $fechaLimiteFin = $fechaActual->copy()->addMonths(2); // Hasta 2 meses en el futuro
+
+    // Obtener los registros que cumplan con la condición
+    $vallas = Valla::whereBetween('fecha_instalacion', [$fechaLimiteInicio, $fechaLimiteFin])->get();
+
+    // Agregar los meses restantes para cumplir el año a cada registro
+    $vallasConMesesRestantes = $vallas->map(function ($valla) use ($fechaActual) {
+        // Convertir fecha_instalacion a un objeto Carbon si es un string
+        $fechaInstalacion = Carbon::parse($valla->fecha_instalacion);
+        
+        // Calcular la fecha de aniversario de instalación (a un año de fecha_instalacion)
+        $fechaAniversario = $fechaInstalacion->copy()->addYear();
+
+        // Calcular la diferencia en meses entre la fecha actual y el aniversario
+        $mesesRestantes = $fechaActual->diffInMonths($fechaAniversario, false);
+
+        // Añadir el cálculo al registro
+        $valla->meses_restantes = $mesesRestantes;
+
+        return $valla;
+    });
+
+    // Retornar los registros con los meses restantes como respuesta JSON
+    return response()->json($vallasConMesesRestantes);
+}
     public function uploadExcel(Request $request)
     {
         $request->validate([
@@ -111,62 +152,45 @@ class VallasController extends Controller
     public function updatdeclaracionanual(Request $request, $id)
 {
     // Validar la solicitud
-    $validator = Validator::make($request->all(), [
-            'n_declaracion' => 'required|string|max:255',
-            'razon_social' => 'required|string|max:255',
-            'vigencia' => 'required|string|max:255',
-            'fecha_declaracion' => 'required',
-            'nit_contribuyente' => 'required|string',
-            'direccion' => 'required|string|max:50',
-            'ciudad' => 'required|string|max:50',
-        
-    ]);
+        $validator = Validator::make($request->all(), [
+            'opcion' => 'required|string|max:255',
+            'n_registro' => 'required|string|max:255',
+            'fecha_instalacion' => 'required|date',
+            'lugar_instalacion' => 'required|string|max:255',
+            'donde_instalo' => 'required|string|max:255',
+            'base_gravable' => 'required|numeric',
+            'impuesto_pagar' => 'required|numeric',
+            'contribuyente_id' => 'required|integer|exists:contribuyentes,id'
+        ]);
 
-    // Retornar errores de validación si los hay
-    if ($validator->fails()) {
-        return response()->json($validator->errors(), 422);
-    }
+        // Retornar errores de validación si los hay
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
 
-    // Buscar el usuario por ID
-    $Valla = Valla::find($id);
-    if (!$Valla) {
-        return response()->json(['message' => 'Usuario no encontrado'], 404);
-    }
+        // Buscar el registro por ID
+        $Valla = Valla::find($id);
+        if (!$Valla) {
+            return response()->json(['message' => 'Registro no encontrado'], 404);
+        }
 
-    $Valla->n_declaracion = $request->input('n_declaracion');
-    $Valla->vigencia = $request->input('vigencia');
-    $Valla->fecha_declaracion = $request->input('fecha_declaracion');
-    $Valla->nit_contribuyente = $request->input('nit_contribuyente');
-    $Valla->razon_social = $request->input('razon_social');
-    $Valla->regimen = $request->input('regimen');
-    $Valla->direccion = $request->input('direccion');
-    $Valla->ciudad = $request->input('ciudad');
-    $Valla->correo_electronico = $request->input('correo_electronico');
-    $Valla->total_ingresos_nacionales = $request->input('total_ingresos_nacionales');
-    $Valla->menos_ingresos_fuera_municipio = $request->input('menos_ingresos_fuera_municipio');
-    $Valla->total_ingresos_municipio = $request->input('total_ingresos_municipio');
-    $Valla->menos_ingresos_rebajas = $request->input('menos_ingresos_rebajas');
-    $Valla->menos_ingresos_exportaciones = $request->input('menos_ingresos_exportaciones');
-    $Valla->menos_ingresos_venta_activos = $request->input('menos_ingresos_venta_activos');
-    $Valla->menos_ingresos_no_gravados = $request->input('menos_ingresos_no_gravados');
-    $Valla->menos_ingresos_exentos = $request->input('menos_ingresos_exentos');
-    $Valla->total_ingresos_gravables = $request->input('total_ingresos_gravables');
-    $Valla->total_impuesto = $request->input('total_impuesto');
-    $Valla->capacidad_kw = $request->input('capacidad_kw');
-    $Valla->impuesto_ley_56 = $request->input('impuesto_ley_56');
-    $Valla->total_industria_comercio = $request->input('total_industria_comercio');
-    $Valla->impuesto_avisos_tableros = $request->input('impuesto_avisos_tableros');
-    $Valla->pago_unidades_adicionales = $request->input('pago_unidades_adicionales');
-    $Valla->sobretasa_bomberil = $request->input('sobretasa_bomberil');
-    $Valla->sobretasa_seguridad = $request->input('sobretasa_seguridad');
-    $Valla->total_impuesto_cargo = $request->input('total_impuesto_cargo');
+        // Asignar los valores del request a los campos nuevos
+        $Valla->opcion = $request->input('opcion');
+        $Valla->n_registro = $request->input('n_registro');
+        $Valla->fecha_instalacion = $request->input('fecha_instalacion');
+        $Valla->lugar_instalacion = $request->input('lugar_instalacion');
+        $Valla->donde_instalo = $request->input('donde_instalo');
+        $Valla->base_gravable = $request->input('base_gravable');
+        $Valla->impuesto_pagar = $request->input('impuesto_pagar');
+        $Valla->contribuyente_id = $request->input('contribuyente_id');
 
+        // Guardar los cambios en la base de datos
+        $Valla->save();
 
-    // Guardar los cambios en la base de datos
-    $Valla->save();
+        // Retornar el registro actualizado
+        return response()->json($Valla, 200);
 
-    // Retornar el usuario actualizado
-    return response()->json($Valla, 200);
+            
 }
     public function deletedeclaracionanual($id)
     {
@@ -174,10 +198,10 @@ class VallasController extends Controller
 
         if ($declaracionAnual) {
             $declaracionAnual->delete();
-            return response()->json(['message' => 'Declaración anual eliminado con éxito'], 200);
+            return response()->json(['message' => 'Aviso exterior eliminado con éxito'], 200);
         }
 
-        return response()->json(['message' => 'Declaración anual no encontrada'], 404);
+        return response()->json(['message' => 'Aviso exterior encontrada'], 404);
     }
     public function getallclaracionanual()
     {

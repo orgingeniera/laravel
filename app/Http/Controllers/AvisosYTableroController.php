@@ -28,7 +28,14 @@ class AvisosYTableroController extends Controller
         }
        
     }
+    public function countDeclaracionAnul()
+    {
+        // Contar el número de usuarios en la tabla 'users'
+        $DeclaracionAnul = DeclaracionAnul::count();
 
+        // Devolver el conteo como respuesta JSON
+        return response()->json(['count' => $DeclaracionAnul], 200);
+    }
     public function allavisosytablero(Request $request)
     {
 

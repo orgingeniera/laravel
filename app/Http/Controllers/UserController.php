@@ -12,6 +12,15 @@ class UserController extends Controller
     /**
      * Método para insertar un nuevo usuario en la tabla 'users'
      */
+    public function countUsers()
+    {
+        // Contar el número de usuarios en la tabla 'users'
+        $userCount = User::count();
+
+        // Devolver el conteo como respuesta JSON
+        return response()->json(['count' => $userCount], 200);
+    }
+
     public function store(Request $request)
     {
         // Validación de los datos recibidos

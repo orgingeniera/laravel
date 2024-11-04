@@ -10,6 +10,14 @@ class ContribuyenteController extends Controller
     /**
      * Obtener todos los contribuyentes.
      */
+    public function countContribuyente()
+    {
+        // Contar el número de usuarios en la tabla 'users'
+        $userCount = Contribuyente::count();
+
+        // Devolver el conteo como respuesta JSON
+        return response()->json(['count' => $userCount], 200);
+    }
     public function uploadExcel(Request $request)
     {
         $request->validate([
