@@ -141,4 +141,5 @@ Route::get('/check', function () {
 //usuarios iniciar sesion
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout']);
+Route::get('/getallvallas', [VallasController::class, 'getallavisosytableros']);
 //Fin usuarios
