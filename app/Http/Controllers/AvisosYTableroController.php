@@ -46,7 +46,8 @@ class AvisosYTableroController extends Controller
                 $query->where('razon_social', 'like', "%$search%")
                     ->orWhere('nit_contribuyente', 'like', "%$search%");
             }
-
+            // Ordenar por total_ingresos_gravables en orden descendente
+            $query->orderBy('total_ingresos_gravables', 'desc');
             $declaracionAnuls = $query->paginate($request->input('per_page', 10));
 
             return response()->json($declaracionAnuls);
@@ -193,6 +194,8 @@ class AvisosYTableroController extends Controller
     // Retornar el usuario actualizado
     return response()->json($declaracionAnul, 200);
 }
+
+
     public function deletedeclaracionanual($id)
     {
         $declaracionAnual = DeclaracionAnul::find($id);
@@ -212,18 +215,28 @@ class AvisosYTableroController extends Controller
         // Devolver los usuarios como respuesta JSON
         return response()->json($declaracionAnul);
       }
-      public function obtenerDeclaracionesPorNit($nit)
+      public function eliminarDeclaracionesAnul()
+      {
+          DB::table('declaracionesanul_images')->delete();
+          // Elimina todos los datos de la tabla `declaracionesanul`
+          DeclaracionAnul::query()->delete();
+  
+          return response()->json(['message' => 'Datos eliminados correctamente'], 200);
+      }
+      public function obtenerDeclaracionesPorNit($nit, $vigencia)
       {
 
          // Obtenemos el `nit_contribuyente` y `razon_social` desde `declaracionesanul` o cualquiera de las tablas
          $infoGeneral = DB::table('declaracionesanul')
-         ->select('nit_contribuyente', 'razon_social')
+         ->select('nit_contribuyente', 'razon_social','vigencia','regimen','direccion','ciudad','correo_electronico')
+         ->where('vigencia', $vigencia)
          ->where('nit_contribuyente', $nit)
          ->first();
         // Si no se encuentra en declaracionesanul, intentar con declaracionesmensuales
         if (!$infoGeneral) {
             $infoGeneral = DB::table('declaracionesmensuales')
-                ->select('nit_contribuyente', 'razon_social')
+                ->select('nit_contribuyente', 'razon_social','periodo','regimen','vigencia')
+                ->where('vigencia', $vigencia)
                 ->where('nit_contribuyente', $nit)
                 ->first();
         }
@@ -231,24 +244,28 @@ class AvisosYTableroController extends Controller
         // Si no se encuentra en declaracionesmensuales, intentar con declaracionbimestral
         if (!$infoGeneral) {
             $infoGeneral = DB::table('declaracionbimestral')
-                ->select('nit_contribuyente', 'razon_social')
+                ->select('nit_contribuyente', 'razon_social','periodo','regimen','vigencia')
+                ->where('vigencia', $vigencia)
                 ->where('nit_contribuyente', $nit)
                 ->first();
         }
           $data = [
               'info_general' => $infoGeneral,
               'declaraciones_anuales' => DB::table('declaracionesanul')
-                  ->select('total_industria_comercio', 'impuesto_avisos_tableros')
+                  ->select('total_industria_comercio', 'impuesto_avisos_tableros','vigencia','regimen')
+                  ->where('vigencia', $vigencia)
                   ->where('nit_contribuyente', $nit)
                   ->get(),
   
               'declaraciones_mensuales' => DB::table('declaracionesmensuales')
-                  ->select('autoretencion_impuesto_industria_comercio', 'mas_autoretenciones_impuestos_avisos_tableros')
+                  ->select('autoretencion_impuesto_industria_comercio', 'mas_autoretenciones_impuestos_avisos_tableros','periodo','regimen','vigencia')
+                  ->where('vigencia', $vigencia)
                   ->where('nit_contribuyente', $nit)
                   ->get(),
   
               'declaraciones_bimestrales' => DB::table('declaracionbimestral')
-                  ->select('autoretencion_impuesto_industria_comercio', 'mas_autoretenciones_impuestos_avisos_tableros')
+                  ->select('autoretencion_impuesto_industria_comercio', 'mas_autoretenciones_impuestos_avisos_tableros','periodo','regimen','vigencia')
+                  ->where('vigencia', $vigencia)
                   ->where('nit_contribuyente', $nit)
                   ->get(),
           ];

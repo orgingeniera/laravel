@@ -68,8 +68,8 @@ Route::middleware(\Tymon\JWTAuth\Http\Middleware\Authenticate::class)->group(fun
         Route::put('/updatdeclaracionanual/{id}', [AvisosYTableroController::class, 'updatdeclaracionanual']);
         Route::delete('/deletedeclaracionanual/{id}/delete', [AvisosYTableroController::class, 'deletedeclaracionanual']);
         Route::get('/getallclaracionanual', [AvisosYTableroController::class, 'getallclaracionanual']);
-        Route::get('/obtenerDeclaracionesPorNit/{nit}', [AvisosYTableroController::class, 'obtenerDeclaracionesPorNit']);
-    
+        Route::get('/obtenerDeclaracionesPorNit/{nit}/{vigencia}', [AvisosYTableroController::class, 'obtenerDeclaracionesPorNit']);    
+        Route::delete('/eliminarDeclaracionesAnul', [AvisosYTableroController::class, 'eliminarDeclaracionesAnul']);
     });
    
     //-------
@@ -82,6 +82,7 @@ Route::middleware(\Tymon\JWTAuth\Http\Middleware\Authenticate::class)->group(fun
      Route::middleware('auth:api')->delete('/deletedeclaracionmensual/{id}/delete', [DeclaracionmensualController::class, 'deletedeclaracionmensual']);
      Route::middleware('auth:api')->get('/getAlldeclaracionanualbynit/{id}', [DeclaracionmensualController::class, 'getAllDeclaracionAnualByNit']);
      Route::middleware('auth:api')->get('/declaracionmensualcontroller', [DeclaracionmensualController::class, 'getdeclaracionmensualexportar']);
+     Route::middleware('auth:api')->delete('/eliminarDeclaracionesMensuales', [DeclaracionmensualController::class, 'eliminarDeclaracionesMensuales']);
 
      
      //-----------
@@ -93,6 +94,7 @@ Route::middleware(\Tymon\JWTAuth\Http\Middleware\Authenticate::class)->group(fun
      Route::middleware('auth:api')->delete('/deletedeclaracionbimestral/{id}/delete', [DeclaracionBimestralController::class, 'deletedeclaracionBimestral']);
      Route::middleware('auth:api')->get('/getallclaracionbimestral', [DeclaracionBimestralController::class, 'getallclaracionBimestral']);
      Route::middleware('auth:api')->get('/getAlldeclaracionbimestralbynit/{id}', [DeclaracionBimestralController::class, 'getAllDeclaracionBimestralByNit']);
+     Route::middleware('auth:api')->delete('/eliminarDeclaracionesBimestrales', [DeclaracionBimestralController::class, 'eliminarDeclaracionesBimestrales']);
 
      //----- api contribuyente
      Route::middleware('auth:api')->group(function () {
@@ -117,6 +119,7 @@ Route::middleware(\Tymon\JWTAuth\Http\Middleware\Authenticate::class)->group(fun
         Route::get('/vallasgetall', [VallasController::class, 'getallclaracionanual']);
         Route::get('/vallas/{nit}', [VallasController::class, 'obtenerDeclaracionesPorNit']);
          //api insertar imagenes
+        Route::middleware('auth:api')->delete('vallas-images/{id}', [VallasImageController::class, 'deleteImage']);
         Route::middleware('auth:api')->get('/vallas-images/{vallas_id}', [VallasImageController::class, 'getImages']);
         Route::middleware('auth:api')->post('/vallas-images', [VallasImageController::class, 'store']);
     //-------
@@ -141,4 +144,5 @@ Route::get('/check', function () {
 //usuarios iniciar sesion
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout']);
+Route::get('/getallvallas', [VallasController::class, 'getallavisosytableros']);
 //Fin usuarios

@@ -49,6 +49,26 @@ class VallasImageController extends Controller
             // Retornar las imágenes
             return response()->json($vallasImagens, 200);
         }
+        public function deleteImage($id)
+        {
+            // Buscar la imagen por ID
+            $vallasImagen = VallasImagen::find($id);
+
+            if (!$vallasImagen) {
+                return response()->json(['message' => 'Imagen no encontrada'], 404);
+            }
+
+            // Eliminar el archivo de la carpeta public/storage/images
+            $imagePath = storage_path('app/public/' . $vallasImagen->image_path);
+            if (file_exists($imagePath)) {
+                unlink($imagePath); // Eliminar el archivo
+            }
+
+            // Eliminar la entrada en la base de datos
+            $vallasImagen->delete();
+
+            return response()->json(['message' => 'Imagen eliminada exitosamente'], 200);
+        }
 
 
 }
