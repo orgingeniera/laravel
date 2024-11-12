@@ -77,8 +77,10 @@ class VallasController extends Controller
             $query = Valla::with('contribuyente'); // Agregar la carga de la relación
            
             if ($search) {
-                $query->where('razon_social', 'like', "%$search%")
-                    ->orWhere('nit_contribuyente', 'like', "%$search%");
+                $query->where('lugar_instalacion', 'like', "%$search%")
+                       ->orWhere('n_registro', 'like', "%$search%")
+                       ->orWhere('opcion', 'like', "%$search%")
+                       ->orWhere('donde_instalo', 'like', "%$search%");
             }
 
             $Vallas = $query->paginate($request->input('per_page', 10));

@@ -39,7 +39,8 @@ class DeclaracionmensualController extends Controller
                 $query->where('razon_social', 'like', "%$search%")
                     ->orWhere('nit_contribuyente', 'like', "%$search%");
             }
-
+            // Ordenar por total_ingresos_gravables en orden descendente
+            $query->orderBy('total_ingresos_gravables', 'desc');
             $DeclaracionMensuals = $query->paginate($request->input('per_page', 10));
 
             return response()->json($DeclaracionMensuals);
@@ -207,6 +208,14 @@ class DeclaracionmensualController extends Controller
  
          // Devolver los usuarios como respuesta JSON
          return response()->json($declaracionMensual);
+       }
+       public function eliminarDeclaracionesMensuales()
+       {
+         
+           // Elimina todos los datos de la tabla `declaracionesanul`
+           DeclaracionMensual::query()->delete();
+   
+           return response()->json(['message' => 'Datos eliminados correctamente'], 200);
        }
 }
 

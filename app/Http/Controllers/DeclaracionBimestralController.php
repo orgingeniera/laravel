@@ -39,7 +39,8 @@ class DeclaracionBimestralController extends Controller
                 $query->where('razon_social', 'like', "%$search%")
                     ->orWhere('nit_contribuyente', 'like', "%$search%");
             }
-
+            // Ordenar por total_ingresos_gravables en orden descendente
+            $query->orderBy('total_ingresos_gravables', 'desc');
             $DeclaracionBimestrals = $query->paginate($request->input('per_page', 10));
 
             return response()->json($DeclaracionBimestrals);
@@ -207,6 +208,14 @@ class DeclaracionBimestralController extends Controller
  
          // Devolver los usuarios como respuesta JSON
          return response()->json($DeclaracionBimestral);
+       }
+       public function eliminarDeclaracionesBimestrales()
+       {
+         
+           // Elimina todos los datos de la tabla `declaracionesanul`
+           DeclaracionBimestral::query()->delete();
+   
+           return response()->json(['message' => 'Datos eliminados correctamente'], 200);
        }
 }
 
